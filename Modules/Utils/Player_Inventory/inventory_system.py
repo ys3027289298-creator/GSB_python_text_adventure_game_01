@@ -10,8 +10,8 @@ too_heavy_message = "A magic back would help right about now! Can't carry any mo
 
 # Function to add an item to the inventory
 def add_to_inventory(item, inventory: list):
-    if not_overweight:
-        if item not in inventory:
+    if not_overweight(inventory + [item]):
+        if not any(existing.name == item.name for existing in inventory):
             inventory.append(item)
             text_handler.printGameEventText([f"[Game: Added {item.name} to your inventory]"])
         else:
@@ -33,30 +33,31 @@ def remove_from_inventory(item_name, inventory: list): #"inventory to iterate ov
 
 # methods for adding stackable items to inventory (for stuff like potions, money, etc.)
 def add_to_stack(self):
-        if not_overweight:
-            if self.stack_count < self.max_stack_size:
-                self.stack_count += 1
-                text_handler.printGameEventText([f"[Game: Added {self.name} to your stack (total items: {self.stack_count})]"])
-            else:
-                text_handler.printGameEventText([f"[Game: Your {self.name} stack is already full]"])
-                #should probably just create a new stack in this case -> todo: revisit later
+        if self.stack_count < self.max_stack_size:
+            self.stack_count += 1
+            text_handler.printGameEventText([f"[Game: Added {self.name} to your stack (total items: {self.stack_count})]"])
+            return True
         else:
-            text_handler.printGameEventText([too_heavy_message])
+            text_handler.printGameEventText([f"[Game: Your {self.name} stack is already full]"])
+            #should probably just create a new stack in this case -> todo: revisit later
+            return False
 
 def remove_from_stack(self):
         if self.stack_count > 0:
             self.stack_count -= 1
             text_handler.printGameEventText([f"[Game: Removed {self.name} from your stack (remaining: {self.stack_count})]"])
+            return True
         else:
             text_handler.printGameEventText([f"[Game: Your {self.name} stack is empty]"])
+            return False
 # end of methods for adding stackable items to inventory 
             
 def not_overweight(inventory: list):
     total_weight = 0
     for item in inventory:
-        total_weight += sum(item.weight) # dont really need to use sum here, but I like doing this
-        if item.stack_count > 1: #if we have a stack (remember that there are 2 item types)
-            total_weight += sum(item.weight * sum(item.stack_count-1)) #-1 here, because we've already taken 1 item into account in the line above this IF
+        total_weight += item.weight
+        if getattr(item, "stack_count", 1) > 1: #if we have a stack (remember that there are 2 item types)
+            total_weight += item.weight * (item.stack_count - 1) #-1 here, because we've already taken 1 item into account in the line above this IF
     if total_weight >= max_weight:
         return False # they are overweight
     return True # they are fine to carry more
