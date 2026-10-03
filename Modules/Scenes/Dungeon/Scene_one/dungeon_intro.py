@@ -55,10 +55,7 @@ def hide_in_shadows(player_object: player.Player):
         text_handler.resetColorToWhite()
 
         inventory_system.add_to_inventory(item, player_object.inventory)
-        #just had these last few lines to debug the add_to_inventory functionality
         inventory_system.list_inventory_items(player_object.inventory)
-        if inventory_system.remove_from_inventory(item.name, player_object.inventory):
-            inventory_system.list_inventory_items(player_object.inventory)
         text_handler.resetColorToWhite()
     elif choice == "2":
         continue_hiding(player_object)

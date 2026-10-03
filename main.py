@@ -1,7 +1,8 @@
 #this next line just ensures that python will see where our game package is (and allow us to reference modules within the package), 
 #without us having to edit the pythonPath environment variable
 import sys
-sys.path.append("C:/Users/Text_Adventure_Game") #todo: replace this with wherever your version of the project will be located
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__))) #works regardless of where the project folder lives
 from Modules.Scenes.Dungeon.Scene_one import dungeon_intro
 
 from Modules.Scenes.Assets.Characters.Players import player
